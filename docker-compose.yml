@@ -27,14 +27,25 @@ services:
       WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
       WORDPRESS_DB_NAME: wordpress
 
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
+  modsec-nginx:
+    image: owasp/modsecurity-crs:3.3.5-nginx-alpine-202402140602
     depends_on:
       - wordpress
+    environment:
+      SERVERNAME: yourdomain.com
+      BACKEND: http://wordpress:80
+      PORT: "80"
+      BLOCKING_PARANOIA: 2
+      MODSEC_RESP_BODY_MIMETYPE: "text/plain text/html text/xml application/json"
+      SSL_PORT: "443"
+      SSL_CERT: "/etc/letsencrypt/live/nubitlan.com/fullchain.pem"
+      SSL_CERT_KEY: "/etc/letsencrypt/live/nubitlan.com/privkey.pem"
+      NGINX_ALWAYS_TLS_REDIRECT: "on"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     restart: always
 
 volumes:
