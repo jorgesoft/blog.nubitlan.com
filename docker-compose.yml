@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   db:
-    image: mysql:5.7
+    image: mysql:5.7 # to change to 8.4.0
     volumes:
       - db_data:/var/lib/mysql
     restart: always
@@ -35,7 +35,7 @@ services:
       SERVERNAME: yourdomain.com
       BACKEND: http://wordpress:80
       PORT: "80"
-      BLOCKING_PARANOIA: 2
+      BLOCKING_PARANOIA: 1
       MODSEC_RESP_BODY_MIMETYPE: "text/plain text/html text/xml application/json"
       SSL_PORT: "443"
       SSL_CERT: "/etc/letsencrypt/live/nubitlan.com/fullchain.pem"
@@ -46,6 +46,7 @@ services:
       - "443:443"
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./modsecurity_wordpress.conf:/etc/modsecurity.d/owasp-crs/custom-rules/modsecurity_wordpress.conf:ro
     restart: always
 
 volumes:
